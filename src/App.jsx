@@ -322,6 +322,61 @@ const ASCII_HEADER = String.raw`
 PORTFOLIO OPERATING SYSTEM v2.4.0
 `;
 
+// --- MATRIX RAIN EASTER EGG COMPONENT ---
+const MatrixRain = ({ onClose }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン';
+    const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const nums = '0123456789';
+    const alphabet = katakana + latin + nums;
+    
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const rainDrops = Array.from({ length: columns }).fill(canvas.height);
+
+    for( let x = 0; x < columns; x++ ) {
+        rainDrops[x] = 1;
+    }
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      for(let i = 0; i < rainDrops.length; i++) {
+        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+        
+        if(rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975){
+          rainDrops[i] = 0;
+        }
+        rainDrops[i]++;
+      }
+    };
+
+    const interval = setInterval(draw, 30);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[200] bg-black cursor-pointer" onClick={onClose}>
+      <canvas ref={canvasRef} className="block" />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
+        <p className="text-green-500 font-mono text-xl md:text-3xl tracking-widest bg-black/50 p-4 rounded">Click anywhere to exit the construct</p>
+      </div>
+    </div>
+  );
+};
+
 // Utility function to format text based on the active mode
 const formatDisplayName = (str, isTerminal) => {
   if (!str) return '';
@@ -337,7 +392,7 @@ const formatDisplayName = (str, isTerminal) => {
   ).join(' ');
 };
 
-
+// STATES
 const App = () => {
   // SET TO FALSE BY DEFAULT FOR NON-PROGRAMMER INITIAL VIEW
   const [isTerminalMode, setIsTerminalMode] = useState(false);
@@ -361,6 +416,11 @@ const App = () => {
   const scrollRef = useRef(null);
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
+
+  // EASTER EGG STATES
+  const [showMatrixRain, setShowMatrixRain] = useState(false);
+  const [showPillChoice, setShowPillChoice] = useState(false);
+  const [showWakeUp, setShowWakeUp] = useState(false);
 
   // TERMINAL MODE: Auto-scroll to bottom as new logs come in
   useEffect(() => {
@@ -776,15 +836,12 @@ const App = () => {
         {isTerminalMode && (
           <>
             {/* Mr. Anderson Easter Egg */}
-            <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-3 mix-blend-screen">
+            <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-3  mix-blend-screen">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/mranderson.svg" 
                 alt="Mr. Anderson" 
-                className="w-[60%] md:w-[40%] h-auto object-contain 
-                 brightness-125   /* Makes it pop */
-                 contrast-150     /* Sharpens the edges */
-                 drop-shadow-[0_0_10px_rgba(0,255,10,0.5)] /* Matrix Green Glow */
-                 blur-[0.5px]"
+                onClick={() => setShowMatrixRain(true)}
+                className="w-[60%] md:w-[40%] h-auto object-contain pointer-events-auto cursor-pointer hover:opacity-100 transition-opacity duration-1000" 
               />
             </div>
             
@@ -806,12 +863,13 @@ const App = () => {
             <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px] z-0" />
             <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px] z-0" />
 
-            {/* White Rabbit Easter Egg - Moved below orbs for visibility, pinned bottom right, no fade */}
-            <div className="absolute bottom-0 right-0 z-10 p-4 md:p-12 flex items-end justify-end">
+            {/* White Rabbit Easter Egg - Pinned bottom right, no fade */}
+            <div className="absolute bottom-0 right-0 z-10 p-4 md:p-12 flex items-end justify-end pointer-events-none">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
                 alt="White Rabbit" 
-                className="w-48 md:w-80 h-auto object-contain" 
+                onClick={() => setShowPillChoice(true)}
+                className="w-48 md:w-80 h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
               />
             </div>
           </div>
@@ -1062,6 +1120,48 @@ const App = () => {
           </div>
         </div>
       )}
+{/* ---------------- EASTER EGG OVERLAYS ---------------- */}
+      
+      {/* MATRIX RAIN OVERLAY */}
+      {showMatrixRain && <MatrixRain onClose={() => setShowMatrixRain(false)} />}
+
+      {/* PILL CHOICE OVERLAY */}
+      {showPillChoice && (
+        <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-500 font-mono">
+          <h2 className="text-white text-3xl md:text-5xl mb-16 font-bold tracking-[0.2em] text-center drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+            Make your choice.
+          </h2>
+          <div className="flex gap-16 md:gap-32">
+            {/* Blue Pill */}
+            <button
+              onClick={() => setShowPillChoice(false)}
+              className="group relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-600 shadow-[0_0_40px_rgba(37,99,235,0.6)] hover:shadow-[0_0_80px_rgba(37,99,235,1)] hover:scale-110 transition-all duration-500 flex items-center justify-center border-[6px] border-blue-400"
+            >
+              <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">STAY</span>
+            </button>
+            {/* Red Pill */}
+            <button
+              onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
+              className="group relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-red-600 shadow-[0_0_40px_rgba(220,38,38,0.6)] hover:shadow-[0_0_80px_rgba(220,38,38,1)] hover:scale-110 transition-all duration-500 flex items-center justify-center border-[6px] border-red-400"
+            >
+              <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center leading-tight">WAKE<br/>UP</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* WAKE UP BLACK SCREEN OVERLAY */}
+      {showWakeUp && (
+        <div 
+          className="fixed inset-0 z-[300] bg-black flex items-center justify-center cursor-pointer animate-in fade-in duration-1000"
+          onClick={() => setShowWakeUp(false)}
+        >
+          <p className="text-green-500 font-mono text-4xl md:text-7xl tracking-[0.3em] font-bold opacity-80 hover:opacity-100 animate-pulse">
+            WAKE UP...
+          </p>
+        </div>
+      )}
+      {/* ------------------------------------------------------ */}
 
       <style>{`
         @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 40px; } }
