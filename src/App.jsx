@@ -756,7 +756,7 @@ const App = () => {
           const isDir = VIRTUAL_FS[childPath]?.type === 'dir';
           const isActive = (viewedFile === childPath) || (currentDir === childPath && isDir);
           return (
-            <button key={childPath} onClick={() => handleSidebarClick(childPath)} className={`text-xs text-left py-1 flex items-center gap-2 transition-colors ${isActive ?
+            <button key={childPath} onClick={() => handleSidebarClick(childPath)} className={`text-xs text-left py-1 flex items-center gap-2 transition-colors cursor-pointer ${isActive ?
               (isTerminalMode ? 'text-green-400 font-bold' : 'text-teal-600 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-400 hover:text-slate-700')}`}>
               {isDir ? <Folder size={12} /> : <FileText size={12} />}
               {formatDisplayName(childName, isTerminalMode)}
@@ -774,20 +774,20 @@ const App = () => {
   const currentImage = currentProject ? currentProject.screenshots[selectedImageState.index] : null;
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row font-mono transition-colors duration-500 ${isTerminalMode ? 'bg-[#0a0a0a] text-green-500' : 'bg-slate-50 text-slate-800'}`}>
+    <div className={`h-[100dvh] flex flex-col md:flex-row font-mono transition-colors duration-500 ${isTerminalMode ? 'bg-[#0a0a0a] text-green-500' : 'bg-slate-50 text-slate-800'}`}>
 
       {/* --- MOBILE TOP BAR --- */}
-      <div className={`md:hidden flex items-center justify-between p-4 border-b z-[70] ${isTerminalMode ? 'bg-terminal-dark border-green-900/20' : 'bg-white/80 backdrop-blur-xl border-slate-200'}`}>
+      <div className={`md:hidden flex items-center justify-between p-4 border-b z-[70] shrink-0 ${isTerminalMode ? 'bg-terminal-dark border-green-900/20' : 'bg-white/80 backdrop-blur-xl border-slate-200'}`}>
         <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => handleSidebarClick('/')}>
           <Cpu size={20} className={isTerminalMode ? 'text-green-500' : 'text-teal-600'} />
           <span className="font-bold tracking-tighter">devOS v2.4</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className={`px-6  py-3 w-full max-w-[280px] text-xs sm:text-sm text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg bg-red-950/20 text-red-500 hover:bg-red-500 border border-red-500 transition-all active:scale-95 flex items-center justify-center gap-2 ${isTerminalMode ?
+          <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className={`px-6 py-3 w-full max-w-[280px] text-xs sm:text-sm text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg bg-red-950/20 text-red-500 hover:bg-red-500 border border-red-500 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${isTerminalMode ?
             'border-green-500/30 text-green-500 hover:bg-green-500 hover:text-black' : 'border-indigo-600/30 text-indigo-400 hover:bg-indigo-600 hover:text-black'}`}>
             {isTerminalMode ? 'Non-Programmer View' : 'Programmer Terminal'}
           </button>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-md ${isTerminalMode ? 'text-green-500 hover:bg-green-500/10' : 'text-slate-600 hover:bg-slate-100'}`}>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-md cursor-pointer ${isTerminalMode ? 'text-green-500 hover:bg-green-500/10' : 'text-slate-600 hover:bg-slate-100'}`}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -803,35 +803,35 @@ const App = () => {
           <h1 className={`text-xl font-bold tracking-tighter transition-colors group-hover:opacity-80 ${isTerminalMode ? 'text-green-500' : 'text-slate-800'}`}>devOS v2.4</h1>
         </div>
 
-        <nav className="flex flex-col gap-3 flex-1">
-          <button onClick={() => handleSidebarClick('/')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm ${currentDir === '/' && !viewedFile ?
+        <nav className="flex flex-col gap-3 flex-1 overflow-y-auto custom-scrollbar pr-2">
+          <button onClick={() => handleSidebarClick('/')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm cursor-pointer shrink-0 ${currentDir === '/' && !viewedFile ?
             (isTerminalMode ? 'bg-green-500/10 text-green-400 font-bold' : 'bg-teal-50 text-teal-700 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50')}`}>
             <Monitor size={18} /> {isTerminalMode ? 'Root (/)' : 'Home'}
           </button>
 
-          <div className="flex flex-col">
-            <button onClick={() => handleSidebarClick('/about')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm ${currentDir.startsWith('/about') ?
+          <div className="flex flex-col shrink-0">
+            <button onClick={() => handleSidebarClick('/about')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm cursor-pointer ${currentDir.startsWith('/about') ?
               (isTerminalMode ? 'bg-green-500/10 text-green-400 font-bold' : 'bg-teal-50 text-teal-700 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50')}`}>
               <User size={18} /> About
             </button>
             {renderSubItems('/about')}
           </div>
 
-          <div className="flex flex-col">
-            <button onClick={() => handleSidebarClick('/projects')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm ${currentDir.startsWith('/projects') ?
+          <div className="flex flex-col shrink-0">
+            <button onClick={() => handleSidebarClick('/projects')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm cursor-pointer ${currentDir.startsWith('/projects') ?
               (isTerminalMode ? 'bg-green-500/10 text-green-400 font-bold' : 'bg-teal-50 text-teal-700 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50')}`}>
               <Folder size={18} /> Projects
             </button>
             {renderSubItems('/projects')}
           </div>
 
-          <button onClick={() => handleSidebarClick('/available_for.txt')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm ${viewedFile === '/available_for.txt' ?
+          <button onClick={() => handleSidebarClick('/available_for.txt')} className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors text-left text-sm cursor-pointer shrink-0 ${viewedFile === '/available_for.txt' ?
             (isTerminalMode ? 'bg-green-500/10 text-green-400 font-bold' : 'bg-teal-50 text-teal-700 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50')}`}>
             <Briefcase size={18} /> Available For
           </button>
         </nav>
 
-        <div className={`mt-auto p-4 rounded-xl border transition-all duration-300 ${pendingPrompt ? 'bg-red-500/10 border-red-500/50 animate-pulse' : (isTerminalMode ? 'bg-green-500/5 border-green-500/10' : 'bg-white border-slate-200 shadow-sm')}`}>
+        <div className={`mt-auto p-4 rounded-xl border transition-all duration-300 shrink-0 ${pendingPrompt ? 'bg-red-500/10 border-red-500/50 animate-pulse' : (isTerminalMode ? 'bg-green-500/5 border-green-500/10' : 'bg-white border-slate-200 shadow-sm')}`}>
           <div className="flex items-center gap-2 mb-2">
             <Activity size={14} className={pendingPrompt ? 'text-red-500' : (isTerminalMode ? 'text-green-500' : 'text-teal-500')} />
             <span className={`text-[10px] font-bold uppercase tracking-widest ${pendingPrompt ? 'text-red-500' : (isTerminalMode ? 'text-zinc-500' : 'text-slate-500')}`}>System Status</span>
@@ -851,10 +851,10 @@ const App = () => {
       </aside>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <main className={`flex-1 relative flex flex-col h-[calc(100vh-140px)] md:h-screen overflow-hidden ${isTerminalMode ? 'bg-black font-mono' : 'bg-transparent font-sans'}`}>
+      <main className={`flex-1 relative flex flex-col min-h-0 overflow-hidden ${isTerminalMode ? 'bg-black font-mono' : 'bg-transparent font-sans'}`}>
 
         <div className="absolute top-4 right-4 z-50 hidden md:block">
-          <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className="px-6 py-3 rounded-lg font-black uppercase tracking-widest text-xs sm:text-sm flex items-center gap-2 shadow-xl border transition-all duration-300 bg-red-950/20 text-red-500 border-red-500/50 backdrop-blur-md hover:bg-red-600/50 hover:-translate-y-1">
+          <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className="px-6 py-3 rounded-lg font-black uppercase tracking-widest text-xs sm:text-sm flex items-center gap-2 shadow-xl border transition-all duration-300 bg-red-950/20 text-red-500 border-red-500/50 backdrop-blur-md hover:bg-red-600/50 hover:-translate-y-1 cursor-pointer">
             {isTerminalMode ? <Globe size={16} /> : <Terminal size={16} />}
             {isTerminalMode ? 'Non-Programmer View' : 'Programmer Terminal'}
           </button>
@@ -890,7 +890,7 @@ const App = () => {
                 src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
                 alt="White Rabbit" 
                 onClick={() => setShowPillChoice(true)}
-                className="w-34 md:w-50 h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
+                className="w-32 max-h-[10vh] md:w-50 md:max-h-none h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
               />
             </div>
           </>
@@ -909,7 +909,7 @@ const App = () => {
                 } else {
                   handleSidebarClick(VIRTUAL_FS[currentDir]?.parent || '/');
                 }
-              }} className="md:hidden flex items-center gap-2 text-slate-700 mb-6 font-bold bg-white w-fit px-4 py-2 rounded-full border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
+              }} className="md:hidden flex items-center gap-2 text-slate-700 mb-6 font-bold bg-white w-fit px-4 py-2 rounded-full border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors cursor-pointer">
                 <ArrowLeft size={16} /> Back
               </button>
             )}
@@ -984,10 +984,9 @@ const App = () => {
                             <div className="mt-10 pt-8 border-t border-slate-100">
                               <a
                                 href="https://mr3anderson.pro/assets/Stefan_Anderson_Developer.pdf"
-                                download="Stefan_Anderson_Resume.pdf"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 bg-white text-slate-700 font-bold rounded-xl hover:text-teal-600 hover:border-teal-400 transition-colors shadow-lg shadow-slate-200/40 border border-slate-200"
+                                className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 bg-white text-slate-700 font-bold rounded-xl hover:text-teal-600 hover:border-teal-400 transition-colors shadow-lg shadow-slate-200/40 border border-slate-200 cursor-pointer"
                               >
                                 <Download size={20} /> Download Resume PDF
                               </a>
@@ -1019,7 +1018,7 @@ const App = () => {
                               ))}
                             </div>
                             <div className="pt-12 flex justify-center">
-                              <button onClick={() => window.open(visualNode.url, '_blank')} className="inline-flex items-center gap-3 px-10 py-5 bg-teal-600 text-white rounded-2xl hover:bg-teal-700 transition-all font-bold tracking-wide shadow-xl shadow-teal-600/20 hover:-translate-y-1">
+                              <button onClick={() => window.open(visualNode.url, '_blank')} className="inline-flex items-center gap-3 px-10 py-5 bg-teal-600 text-white rounded-2xl hover:bg-teal-700 transition-all font-bold tracking-wide shadow-xl shadow-teal-600/20 hover:-translate-y-1 cursor-pointer">
                                 Open Live Project <ExternalLink size={20} />
                               </button>
                             </div>
@@ -1043,7 +1042,7 @@ const App = () => {
                       </div>
 
                       {currentDir === '/' ? (
-                        <div className="space-y-4 px-6 max-w-2xl text-center">
+                        <div className="space-y-4 px-4 sm:px-6 max-w-2xl text-center">
                           <h3 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Welcome to devOS</h3>
                           <p className="text-teal-600 font-bold text-lg md:text-xl">Stefan Anderson • Full-Stack & UI/UX Engineer</p>
                           <p className="text-slate-500 md:text-lg leading-relaxed mt-4">
@@ -1057,7 +1056,7 @@ const App = () => {
                         </div>
                       )}
 
-                      <div className="flex flex-wrap items-center justify-center gap-4 px-6 max-w-2xl">
+                      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-2 sm:px-6 w-full">
                         {activeDirectory?.children.map(child => {
                           const isAvailableFor = child === 'available_for.txt';
                           
@@ -1066,7 +1065,7 @@ const App = () => {
                               key={child} 
                               onClick={() => handleSidebarClick(currentDir === '/' ? `/${child}` : `${currentDir}/${child}`)} 
                               className={`
-                                px-6 py-2 transition-all duration-300 font-medium rounded-lg text-sm
+                                cursor-pointer px-4 sm:px-6 py-2 transition-all duration-300 font-medium rounded-lg text-sm flex-1 sm:flex-none min-w-[120px] max-w-[200px] text-center
                                 backdrop-blur-[2px] border shadow-sm
                                 ${isAvailableFor 
                                   ? 'bg-teal-500/10 border-teal-500/40 text-teal-700 hover:bg-teal-500/20 hover:border-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.15)]' 
@@ -1086,7 +1085,7 @@ const App = () => {
           </div>
 
           {!isTerminalMode && showScrollTop && (
-            <button onClick={scrollToTop} className="absolute bottom-8 right-8 p-4 bg-white text-teal-600 rounded-full shadow-2xl z-50 hover:bg-teal-50 border border-slate-100 transition-all hover:-translate-y-2 animate-in zoom-in" aria-label="Scroll to top">
+            <button onClick={scrollToTop} className="absolute bottom-8 right-8 p-4 bg-white text-teal-600 rounded-full shadow-2xl z-50 hover:bg-teal-50 border border-slate-100 transition-all hover:-translate-y-2 animate-in zoom-in cursor-pointer" aria-label="Scroll to top">
               <ChevronUp size={24} strokeWidth={3} />
             </button>
           )}
@@ -1099,14 +1098,14 @@ const App = () => {
           touchEndX.current = e.targetTouches[0].clientX;
           if (Math.abs(touchStartX.current - touchEndX.current) > 10) { if (e.cancelable) e.preventDefault(); }
         }} onTouchEnd={handleTouchEnd}>
-          <button className="absolute top-4 right-4 text-white/70 hover:text-white p-3 z-[110]" onClick={() => setSelectedImageState(null)}><X size={32} /></button>
+          <button className="absolute top-4 right-4 text-white/70 hover:text-white p-3 z-[110] cursor-pointer" onClick={() => setSelectedImageState(null)}><X size={32} /></button>
           <div className="relative w-full max-w-6xl px-2 flex items-center justify-center" onClick={e => e.stopPropagation()}>
             {currentProject.screenshots.length > 1 && (
               <>
                 <div className="absolute left-0 inset-y-0 w-1/4 z-20 cursor-pointer md:hidden" onClick={() => navigateImage(-1)} />
                 <div className="absolute right-0 inset-y-0 w-1/4 z-20 cursor-pointer md:hidden" onClick={() => navigateImage(1)} />
-                <button className="absolute left-4 z-30 text-white/50 hover:text-white transition-all p-4 rounded-full bg-black/20 hover:bg-black/60 backdrop-blur-sm" onClick={() => navigateImage(-1)}><ChevronLeft size={48} /></button>
-                <button className="absolute right-4 z-30 text-white/50 hover:text-white transition-all p-4 rounded-full bg-black/20 hover:bg-black/60 backdrop-blur-sm" onClick={() => navigateImage(1)}><ChevronRight size={48} /></button>
+                <button className="absolute left-4 z-30 text-white/50 hover:text-white transition-all p-4 rounded-full bg-black/20 hover:bg-black/60 backdrop-blur-sm cursor-pointer" onClick={() => navigateImage(-1)}><ChevronLeft size={48} /></button>
+                <button className="absolute right-4 z-30 text-white/50 hover:text-white transition-all p-4 rounded-full bg-black/20 hover:bg-black/60 backdrop-blur-sm cursor-pointer" onClick={() => navigateImage(1)}><ChevronRight size={48} /></button>
               </>
             )}
             <div className="relative rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full">
@@ -1137,7 +1136,7 @@ const App = () => {
           <div className="flex gap-12 md:gap-32 items-center justify-center">
             <button
               onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
-              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none cursor-pointer"
             >
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/leftred.svg" 
@@ -1148,7 +1147,7 @@ const App = () => {
 
             <button
               onClick={() => setShowPillChoice(false)}
-              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none cursor-pointer"
             >
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/rightblue.svg" 
