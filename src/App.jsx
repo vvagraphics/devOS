@@ -890,7 +890,7 @@ const App = () => {
                 src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
                 alt="White Rabbit" 
                 onClick={() => setShowPillChoice(true)}
-                className="w-48 md:w-80 h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
+                className="w-34 md:w-50 h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
               />
             </div>
           </>
