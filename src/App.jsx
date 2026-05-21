@@ -337,29 +337,69 @@ const MatrixRain = ({ onClose }) => {
     const nums = '0123456789';
     const alphabet = katakana + latin + nums;
     
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const rainDrops = Array.from({ length: columns }).fill(canvas.height);
+    const baseFontSize = 16;
+    const columns = canvas.width / baseFontSize;
+    
+    // Position tracking (Y coordinate) for each column
+    const rainDrops = Array.from({ length: columns }).fill(0);
+    // Randomized multipliers from 0.4 (slow/distant) to 1.4 (fast/close) for depth
+    const streamSpeeds = Array.from({ length: columns }).map(() => Math.random() * 1.0 + 0.4);
 
-    for( let x = 0; x < columns; x++ ) {
-        rainDrops[x] = 1;
-    }
+    // Variable to track background flashing phase
+    let flashTick = 0;
 
     const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      flashTick += 0.05; // Control speed of background pulse animation
+
+      // Calculate low-frequency pulse for full screen background red alert flash
+      // Sine wave oscillates between 0.02 and 0.07 to maintain transparency trails
+      const backgroundAlpha = 0.04 + Math.sin(flashTick) * 0.02;
+      const redFlashIntensity = Math.floor(10 + Math.sin(flashTick) * 8);
+
+      // Apply the pulsing background color mix
+      ctx.fillStyle = `rgba(${redFlashIntensity}, 0, 0, ${backgroundAlpha})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      ctx.fillStyle = '#0F0';
-      ctx.font = fontSize + 'px monospace';
-
-      for(let i = 0; i < rainDrops.length; i++) {
+      for (let i = 0; i < rainDrops.length; i++) {
         const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-        ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
         
-        if(rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975){
-          rainDrops[i] = 0;
+        // 1. FAUX-3D DEPTH OF FIELD MATH: Scale font size dynamically based on speed factor
+        const currentSize = baseFontSize * (streamSpeeds[i] * 1.1);
+        ctx.font = `bold ${currentSize}px monospace`;
+
+        // 2. DEPTH OF FIELD COLOR MIX (RED PROFILE): 
+        if (Math.random() > 0.98) {
+          // Blinding white hot glitched leading head drop character
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = '#ef4444';
+        } else {
+          ctx.shadowBlur = 0; // Performance optimization preservation on trails
+          
+          if (streamSpeeds[i] > 1.1) {
+            // Foreground Layer: Blazing Cyberpunk Red (Fast & Large)
+            ctx.fillStyle = '#ff0033'; 
+          } else if (streamSpeeds[i] > 0.7) {
+            // Midground Layer: Standard Crimson Red (Medium Speed)
+            ctx.fillStyle = '#b91c1c';
+          } else {
+            // Background Layer: Deep Subdued Maroon / Shadow Ghost trail (Slow & Small)
+            ctx.fillStyle = '#450a0a';
+          }
         }
-        rainDrops[i]++;
+
+        // Draw character node array entry
+        ctx.fillText(text, i * baseFontSize, rainDrops[i] * baseFontSize);
+        
+        // Boundaries tracking reset loop
+        if (rainDrops[i] * baseFontSize > canvas.height && Math.random() > 0.975) {
+          rainDrops[i] = 0;
+          // Mutate depth/speed scaling assignments again upon recycling
+          streamSpeeds[i] = Math.random() * 1.0 + 0.4;
+        }
+        
+        // Increment downward velocity using its specific depth metric
+        rainDrops[i] += streamSpeeds[i];
       }
     };
 
@@ -370,8 +410,15 @@ const MatrixRain = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] bg-black cursor-pointer" onClick={onClose}>
       <canvas ref={canvasRef} className="block" />
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
-        <p className="text-green-500 font-mono text-xl md:text-3xl tracking-widest bg-black/50 p-4 rounded">Click anywhere to exit the construct</p>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 text-center select-none">
+        <div className="bg-black/80 backdrop-blur-sm border border-red-500/30 px-6 py-4 rounded-xl max-w-md shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-pulse">
+          <p className="text-red-500 font-mono text-sm md:text-base tracking-[0.2em] font-black uppercase mb-1">
+            CONSTRUCT OVERLOADED
+          </p>
+          <p className="text-zinc-500 font-mono text-[10px] tracking-wider uppercase">
+            Click anywhere to purge cache links
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -559,9 +606,18 @@ const App = () => {
     setHistory(prev => [...prev, { type: 'input', content: `guest@portfolio:${currentDir}$ ${input}` }]);
 
     switch (cmd.toLowerCase()) {
+      case 'matrix':
+      case 'wakeup':
+      case 'neo':
+      case 'mranderson':
+      case 'mr3anderson':
+        setShowMatrixRain(true);
+        setHistory(prev => [...prev, { type: 'output', content: 'SYSTEM BREACHED. THE CONSTRUCT IS LOADING...' }]);
+        break;
       case 'help':
         setHistory(prev => [...prev, { type: 'output', content: HELP_TEXT }]);
         break;
+        
       case 'ls':
         setHistory(prev => [...prev, { type: 'output', content: VIRTUAL_FS[currentDir].children.join('  ') }]);
         break;
@@ -835,13 +891,13 @@ const App = () => {
         {/* Scanlines Effect & Mr. Anderson (Only in Terminal Mode) */}
         {isTerminalMode && (
           <>
-            {/* Mr. Anderson Easter Egg */}
-            <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-3  mix-blend-screen">
+            {/* Mr. Anderson Easter Egg - Unclickable, safe in background */}
+            <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-2 mix-blend-screen">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/mranderson.svg" 
                 alt="Mr. Anderson" 
-                onClick={() => setShowMatrixRain(true)}
-                className="w-[60%] md:w-[40%] h-auto object-contain pointer-events-auto cursor-pointer hover:opacity-100 transition-opacity duration-1000" 
+                className="w-[60%] md:w-[40%] h-auto object-contain
+                blur-[2px]" 
               />
             </div>
             
@@ -854,17 +910,19 @@ const App = () => {
 
         {/* Decorative Background Blob & White Rabbit (Only in Visual Mode - Glass Lab) */}
         {!isTerminalMode && (
-          <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-            {/* Subtle Blueprint Grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-40 z-0" />
+          <>
+            {/* Background elements (z-0 so they stay behind content) */}
+            <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+              {/* Subtle Blueprint Grid */}
+              <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-40 z-0" />
+              {/* Glassy Orbs */}
+              <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-teal-100/40 blur-[120px] animate-pulse z-0" />
+              <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px] z-0" />
+              <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px] z-0" />
+            </div>
 
-            {/* Glassy Orbs */}
-            <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-teal-100/40 blur-[120px] animate-pulse z-0" />
-            <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px] z-0" />
-            <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px] z-0" />
-
-            {/* White Rabbit Easter Egg - Pinned bottom right, no fade */}
-            <div className="absolute bottom-0 right-0 z-10 p-4 md:p-12 flex items-end justify-end pointer-events-none">
+            {/* White Rabbit Easter Egg - (z-50 so it sits ABOVE the content shield) */}
+            <div className="absolute bottom-0 right-0 z-50 p-4 md:p-12 flex items-end justify-end pointer-events-none">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
                 alt="White Rabbit" 
@@ -872,7 +930,7 @@ const App = () => {
                 className="w-48 md:w-80 h-auto object-contain pointer-events-auto cursor-pointer hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(20,184,166,0.5)] transition-all duration-300" 
               />
             </div>
-          </div>
+          </>
         )}
 
           
@@ -1126,38 +1184,70 @@ const App = () => {
       {showMatrixRain && <MatrixRain onClose={() => setShowMatrixRain(false)} />}
 
       {/* PILL CHOICE OVERLAY */}
-      {showPillChoice && (
-        <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-500 font-mono">
-          <h2 className="text-white text-3xl md:text-5xl mb-16 font-bold tracking-[0.2em] text-center drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-            Make your choice.
-          </h2>
-          <div className="flex gap-16 md:gap-32">
-            {/* Blue Pill */}
-            <button
-              onClick={() => setShowPillChoice(false)}
-              className="group relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-600 shadow-[0_0_40px_rgba(37,99,235,0.6)] hover:shadow-[0_0_80px_rgba(37,99,235,1)] hover:scale-110 transition-all duration-500 flex items-center justify-center border-[6px] border-blue-400"
-            >
-              <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">STAY</span>
-            </button>
-            {/* Red Pill */}
-            <button
-              onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
-              className="group relative w-24 h-24 md:w-32 md:h-32 rounded-full bg-red-600 shadow-[0_0_40px_rgba(220,38,38,0.6)] hover:shadow-[0_0_80px_rgba(220,38,38,1)] hover:scale-110 transition-all duration-500 flex items-center justify-center border-[6px] border-red-400"
-            >
-              <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center leading-tight">WAKE<br/>UP</span>
-            </button>
-          </div>
-        </div>
-      )}
+{showPillChoice && (
+  // Removed backdrop-blur-md and shortened fade-in to duration-150
+  <div className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center animate-in fade-in duration-150 font-mono">
+    <h2 className="text-white text-3xl md:text-5xl mb-16 font-bold tracking-[0.2em] text-center">
+      Make your choice.
+    </h2>
+    <div className="flex gap-12 md:gap-32 items-center justify-center">
+      
+      {/* Red Pill */}
+      <button
+        onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
+        // Isolated transition to transform only, removed the heavy glowing drop-shadow
+        className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+      >
+        <img 
+          src="https://mr3anderson.pro/assets/images/The%20Construct/leftred.svg" 
+          alt="Red Pill" 
+          className="w-220 md:w-200 h-auto" 
+        />
+      </button>
+
+      {/* Blue Pill */}
+      <button
+        onClick={() => setShowPillChoice(false)}
+        className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+      >
+        <img 
+          src="https://mr3anderson.pro/assets/images/The%20Construct/rightblue.svg" 
+          alt="Blue Pill" 
+          className="w-220 md:w-200 h-auto" 
+        />
+      </button>
+
+    </div>
+  </div>
+)}
 
       {/* WAKE UP BLACK SCREEN OVERLAY */}
       {showWakeUp && (
         <div 
-          className="fixed inset-0 z-[300] bg-black flex items-center justify-center cursor-pointer animate-in fade-in duration-1000"
+          className="fixed inset-0 z-[300] bg-[#020202] flex flex-col items-center justify-center cursor-pointer select-none animate-in fade-in duration-700"
           onClick={() => setShowWakeUp(false)}
         >
-          <p className="text-green-500 font-mono text-4xl md:text-7xl tracking-[0.3em] font-bold opacity-80 hover:opacity-100 animate-pulse">
-            WAKE UP...
+          {/* Surveillance Eye Moved to Main Stage (Behind text) */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-25 mix-blend-screen pointer-events-none">
+            <img 
+              src="https://mr3anderson.pro/assets/images/The%20Construct/eye.gif" 
+              alt="Watching" 
+              className="w-[85%] max-w-md md:max-w-xl h-auto object-contain grayscale scale-110"
+            />
+          </div>
+
+          {/* Front text layers */}
+          <div className="space-y-4 text-center max-w-xl select-none">
+            <h2 className="text-green-500 font-mono text-4xl md:text-7xl tracking-[0.2em] font-black uppercase drop-shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse">
+              Wake up...
+            </h2>
+            <p className="text-red-600/80 text-xs md:text-sm tracking-[0.2em] uppercase font-black animate-bounce delay-500">
+              [!] The Matrix is watching you.
+            </p>
+          </div>
+
+          <p className="absolute bottom-6 font-mono text-zinc-600 text-[10px] md:text-xs uppercase tracking-normal tracking-widest uppercase pointer-events-none">
+            They are tracking your node. Click anywhere to sever link.
           </p>
         </div>
       )}
