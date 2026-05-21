@@ -1,3 +1,6 @@
+/* ==========================================================================
+   IMPORTS
+   ========================================================================== */
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Terminal, Monitor, User, Folder, Menu, Globe, Cpu,
@@ -6,9 +9,9 @@ import {
   ChevronUp, ArrowLeft, Download, Sparkles
 } from 'lucide-react';
 
-/**
- * VIRTUAL FILE SYSTEM WITH PROJECT DATA & PREVIEWS
- */
+/* ==========================================================================
+   VIRTUAL FILE SYSTEM DATA
+   ========================================================================== */
 const VIRTUAL_FS = {
   '/': { type: 'dir', children: ['about', 'projects', 'available_for.txt'], parent: null, label: 'ROOT_SYSTEM', visualLabel: 'Home' },
   '/about': { type: 'dir', children: ['bio.txt', 'experience.txt', 'skills.txt', 'interests.txt'], parent: '/', label: 'USER_PROFILE' },
@@ -77,12 +80,6 @@ const VIRTUAL_FS = {
     'crcleaning',
     'war-room',
     'deep-index'
-    // 'workforce-pulse-dashboard',
-    // 'syncdesk-dashboard',
-    // 'warehouse-inventory-dashboard',
-    // 'chronos-flow',
-    // 'fleetpath-mission-control',
-    // 'audittrail-hr-compliance-portal'
   ], parent: '/', label: 'PROJ_REPOS', visualLabel: 'Projects' },
 
   '/projects/gift-genie': { type: 'dir', children: ['readme.md'], parent: '/projects', label: 'GIFT_GENIE' },
@@ -112,7 +109,6 @@ A comprehensive React-based utility designed to take the stress out of gift-givi
     parent: '/projects/gift-genie'
   },
 
-
   '/projects/reson': { type: 'dir', children: ['readme.md'], parent: '/projects', label: 'RESON' },
   '/projects/reson/readme.md': {
     type: 'file',
@@ -141,7 +137,6 @@ A hybrid Angular platform that bridges the gap between high-end musical instrume
 Includes an intelligent "Vibe Engine" that accepts natural language prompts to generate custom playlists, dynamic UI themes, and curated imagery that shifts the app's aesthetic in real-time to match the user's mood.`,
     parent: '/projects/aegis-edge-monitor'
   },
-
 
   '/projects/crcleaning': { type: 'dir', children: ['readme.md'], parent: '/projects', label: 'CRCLEANING' },
   '/projects/crcleaning/readme.md': {
@@ -290,7 +285,9 @@ Contact: vvagraphics@gmail.com\nPortfolio: mr3anderson.pro\nGithub: github.com/v
   }
 };
 
-
+/* ==========================================================================
+   CONSTANTS
+   ========================================================================== */
 const HELP_TEXT = `
 AVAILABLE COMMANDS:
 -------------------
@@ -302,14 +299,12 @@ gui         : Toggle to visual interface.
 pwd         : Print working directory.
 help        : Display this manual.
 
-
 INTERACTION TIPS:
 -----------------
 Navigation on the left sidebar updates both views.
 Typing 'run' on a directory will auto-load its README.
 TAB Completion is supported for paths and files.
 `;
-
 
 const ASCII_HEADER = String.raw`
        _                 ____     _____
@@ -322,7 +317,9 @@ const ASCII_HEADER = String.raw`
 PORTFOLIO OPERATING SYSTEM v2.4.0
 `;
 
-// --- MATRIX RAIN EASTER EGG COMPONENT ---
+/* ==========================================================================
+   UTILITIES & COMPONENTS
+   ========================================================================== */
 const MatrixRain = ({ onClose }) => {
   const canvasRef = useRef(null);
 
@@ -340,65 +337,48 @@ const MatrixRain = ({ onClose }) => {
     const baseFontSize = 16;
     const columns = canvas.width / baseFontSize;
     
-    // Position tracking (Y coordinate) for each column
     const rainDrops = Array.from({ length: columns }).fill(0);
-    // Randomized multipliers from 0.4 (slow/distant) to 1.4 (fast/close) for depth
     const streamSpeeds = Array.from({ length: columns }).map(() => Math.random() * 1.0 + 0.4);
 
-    // Variable to track background flashing phase
     let flashTick = 0;
 
     const draw = () => {
-      flashTick += 0.05; // Control speed of background pulse animation
-
-      // Calculate low-frequency pulse for full screen background red alert flash
-      // Sine wave oscillates between 0.02 and 0.07 to maintain transparency trails
+      flashTick += 0.05; 
       const backgroundAlpha = 0.04 + Math.sin(flashTick) * 0.02;
       const redFlashIntensity = Math.floor(10 + Math.sin(flashTick) * 8);
 
-      // Apply the pulsing background color mix
       ctx.fillStyle = `rgba(${redFlashIntensity}, 0, 0, ${backgroundAlpha})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       for (let i = 0; i < rainDrops.length; i++) {
         const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
         
-        // 1. FAUX-3D DEPTH OF FIELD MATH: Scale font size dynamically based on speed factor
         const currentSize = baseFontSize * (streamSpeeds[i] * 1.1);
         ctx.font = `bold ${currentSize}px monospace`;
 
-        // 2. DEPTH OF FIELD COLOR MIX (RED PROFILE): 
         if (Math.random() > 0.98) {
-          // Blinding white hot glitched leading head drop character
           ctx.fillStyle = '#ffffff';
           ctx.shadowBlur = 15;
           ctx.shadowColor = '#ef4444';
         } else {
-          ctx.shadowBlur = 0; // Performance optimization preservation on trails
+          ctx.shadowBlur = 0; 
           
           if (streamSpeeds[i] > 1.1) {
-            // Foreground Layer: Blazing Cyberpunk Red (Fast & Large)
             ctx.fillStyle = '#ff0033'; 
           } else if (streamSpeeds[i] > 0.7) {
-            // Midground Layer: Standard Crimson Red (Medium Speed)
             ctx.fillStyle = '#b91c1c';
           } else {
-            // Background Layer: Deep Subdued Maroon / Shadow Ghost trail (Slow & Small)
             ctx.fillStyle = '#450a0a';
           }
         }
 
-        // Draw character node array entry
         ctx.fillText(text, i * baseFontSize, rainDrops[i] * baseFontSize);
         
-        // Boundaries tracking reset loop
         if (rainDrops[i] * baseFontSize > canvas.height && Math.random() > 0.975) {
           rainDrops[i] = 0;
-          // Mutate depth/speed scaling assignments again upon recycling
           streamSpeeds[i] = Math.random() * 1.0 + 0.4;
         }
         
-        // Increment downward velocity using its specific depth metric
         rainDrops[i] += streamSpeeds[i];
       }
     };
@@ -424,26 +404,25 @@ const MatrixRain = ({ onClose }) => {
   );
 };
 
-// Utility function to format text based on the active mode
 const formatDisplayName = (str, isTerminal) => {
   if (!str) return '';
-  if (isTerminal) return str; // Keep raw for Terminal
+  if (isTerminal) return str; 
 
-  // Format for Visual Mode: Remove extensions, replace dashes/underscores with spaces
   let formatted = str.replace(/\.[^/.]+$/, "");
   formatted = formatted.replace(/[-_]/g, ' ');
 
-  // Convert to Proper Case (Title Case)
   return formatted.split(' ').map(word =>
     word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
   ).join(' ');
 };
 
-// STATES
+/* ==========================================================================
+   MAIN APP COMPONENT
+   ========================================================================== */
 const App = () => {
-  // SET TO FALSE BY DEFAULT FOR NON-PROGRAMMER INITIAL VIEW
+  
+  // --- STATE ---
   const [isTerminalMode, setIsTerminalMode] = useState(false);
-
   const [currentDir, setCurrentDir] = useState('/');
   const [viewedFile, setViewedFile] = useState(null);
   const [history, setHistory] = useState([
@@ -459,24 +438,23 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  const [showMatrixRain, setShowMatrixRain] = useState(false);
+  const [showPillChoice, setShowPillChoice] = useState(false);
+  const [showWakeUp, setShowWakeUp] = useState(false);
+
+  // --- REFS ---
   const inputRef = useRef(null);
   const scrollRef = useRef(null);
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
-  // EASTER EGG STATES
-  const [showMatrixRain, setShowMatrixRain] = useState(false);
-  const [showPillChoice, setShowPillChoice] = useState(false);
-  const [showWakeUp, setShowWakeUp] = useState(false);
-
-  // TERMINAL MODE: Auto-scroll to bottom as new logs come in
+  // --- EFFECTS ---
   useEffect(() => {
     if (isTerminalMode && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [history, isTerminalMode]);
 
-  // VISUAL MODE: Scroll to top when changing pages or opening a prompt
   useEffect(() => {
     if (!isTerminalMode && scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -494,6 +472,7 @@ const App = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImageState]);
 
+  // --- HANDLERS ---
   const handleScroll = (e) => {
     if (e.target.scrollTop > 300) setShowScrollTop(true);
     else setShowScrollTop(false);
@@ -525,7 +504,6 @@ const App = () => {
       setHistory(prev => [...prev, { type: 'output', content: log }]);
     }
 
-    // UPDATED LOGIC: Only lock and prompt if we are in the Programmer Terminal.
     if (node.isProject && isTerminalMode) {
       setHistory(prev => [
         ...prev,
@@ -542,7 +520,6 @@ const App = () => {
   const finishLoading = async (path) => {
     const node = VIRTUAL_FS[path];
     await sleep(150);
-    // Explicitly add ascii block to history first, then the content
     if (node.ascii) setHistory(prev => [...prev, { type: 'output', content: node.ascii }]);
     setHistory(prev => [...prev, { type: 'output', content: node.content }]);
     if (node.isProject && node.screenshots) {
@@ -617,7 +594,6 @@ const App = () => {
       case 'help':
         setHistory(prev => [...prev, { type: 'output', content: HELP_TEXT }]);
         break;
-        
       case 'ls':
         setHistory(prev => [...prev, { type: 'output', content: VIRTUAL_FS[currentDir].children.join('  ') }]);
         break;
@@ -629,7 +605,7 @@ const App = () => {
         break;
       case 'gui':
         setIsTerminalMode(false);
-        setPendingPrompt(null); // Also clear if typed by command
+        setPendingPrompt(null); 
         break;
       case 'cd':
         if (!arg || arg === '~') {
@@ -720,14 +696,13 @@ const App = () => {
       oscillator.start();
       oscillator.stop(audioCtx.currentTime + 0.2);
     } catch (e) {
-      // Audio context might be blocked by browser autoplay policy
+      // Ignored
     }
   };
 
   const handleSidebarClick = async (path) => {
     if (isProcessing) return;
 
-    // IF A PROMPT IS ACTIVE, ENFORCE TERMINAL LOCKDOWN
     if (pendingPrompt) {
       playErrorSound();
       if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]);
@@ -784,7 +759,6 @@ const App = () => {
             <button key={childPath} onClick={() => handleSidebarClick(childPath)} className={`text-xs text-left py-1 flex items-center gap-2 transition-colors ${isActive ?
               (isTerminalMode ? 'text-green-400 font-bold' : 'text-teal-600 font-bold') : (isTerminalMode ? 'text-zinc-600 hover:text-green-500' : 'text-slate-400 hover:text-slate-700')}`}>
               {isDir ? <Folder size={12} /> : <FileText size={12} />}
-              {/* APPLIED PROPER CASE FORMATTER HERE */}
               {formatDisplayName(childName, isTerminalMode)}
             </button>
           );
@@ -793,6 +767,7 @@ const App = () => {
     );
   };
 
+  // --- RENDER VARIABLES ---
   const visualNode = viewedFile ? { ...VIRTUAL_FS[viewedFile], path: viewedFile } : null;
   const activeDirectory = VIRTUAL_FS[currentDir];
   const currentProject = selectedImageState ? VIRTUAL_FS[selectedImageState.projectPath] : null;
@@ -801,14 +776,13 @@ const App = () => {
   return (
     <div className={`min-h-screen flex flex-col md:flex-row font-mono transition-colors duration-500 ${isTerminalMode ? 'bg-[#0a0a0a] text-green-500' : 'bg-slate-50 text-slate-800'}`}>
 
-      {/* MOBILE TOP BAR */}
+      {/* --- MOBILE TOP BAR --- */}
       <div className={`md:hidden flex items-center justify-between p-4 border-b z-[70] ${isTerminalMode ? 'bg-terminal-dark border-green-900/20' : 'bg-white/80 backdrop-blur-xl border-slate-200'}`}>
         <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => handleSidebarClick('/')}>
           <Cpu size={20} className={isTerminalMode ? 'text-green-500' : 'text-teal-600'} />
           <span className="font-bold tracking-tighter">devOS v2.4</span>
         </div>
         <div className="flex items-center gap-2">
-          {/* UPDATED: ADDED setPendingPrompt(null) WHEN TOGGLING TO AVOID GETTING STUCK */}
           <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className={`px-6  py-3 w-full max-w-[280px] text-xs sm:text-sm text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg bg-red-950/20 text-red-500 hover:bg-red-500 border border-red-500 transition-all active:scale-95 flex items-center justify-center gap-2 ${isTerminalMode ?
             'border-green-500/30 text-green-500 hover:bg-green-500 hover:text-black' : 'border-indigo-600/30 text-indigo-400 hover:bg-indigo-600 hover:text-black'}`}>
             {isTerminalMode ? 'Non-Programmer View' : 'Programmer Terminal'}
@@ -819,7 +793,7 @@ const App = () => {
         </div>
       </div>
 
-      {/* SIDEBAR */}
+      {/* --- SIDEBAR --- */}
       <aside className={`fixed inset-y-0 left-0 z-[60] w-72 transform transition-transform duration-300 md:relative md:translate-x-0 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} ${shakeSidebar ?
         'animate-shake-sidebar' : ''} p-6 flex flex-col gap-6 border-r ${isTerminalMode ? 'bg-[#0d0d0d] border-green-900/10' : 'bg-white/80 backdrop-blur-2xl border-slate-200 shadow-[10px_0_40px_rgba(0,0,0,0.03)]'}`}>
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => handleSidebarClick('/')}>
@@ -876,52 +850,41 @@ const App = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT AREA */}
+      {/* --- MAIN CONTENT AREA --- */}
       <main className={`flex-1 relative flex flex-col h-[calc(100vh-140px)] md:h-screen overflow-hidden ${isTerminalMode ? 'bg-black font-mono' : 'bg-transparent font-sans'}`}>
 
-        {/* Desktop Absolute Switch View Button (Glassy Red) */}
         <div className="absolute top-4 right-4 z-50 hidden md:block">
-          {/* UPDATED: ADDED setPendingPrompt(null) WHEN TOGGLING TO AVOID GETTING STUCK */}
           <button onClick={() => { setIsTerminalMode(!isTerminalMode); setPendingPrompt(null); }} className="px-6 py-3 rounded-lg font-black uppercase tracking-widest text-xs sm:text-sm flex items-center gap-2 shadow-xl border transition-all duration-300 bg-red-950/20 text-red-500 border-red-500/50 backdrop-blur-md hover:bg-red-600/50 hover:-translate-y-1">
             {isTerminalMode ? <Globe size={16} /> : <Terminal size={16} />}
             {isTerminalMode ? 'Non-Programmer View' : 'Programmer Terminal'}
           </button>
         </div>
 
-        {/* Scanlines Effect & Mr. Anderson (Only in Terminal Mode) */}
         {isTerminalMode && (
           <>
-            {/* Mr. Anderson Easter Egg - Unclickable, safe in background */}
             <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-2 mix-blend-screen">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/mranderson.svg" 
                 alt="Mr. Anderson" 
-                className="w-[60%] md:w-[40%] h-auto object-contain
-                blur-[2px]" 
+                className="w-[60%] md:w-[40%] h-auto object-contain blur-[2px]" 
               />
             </div>
             
-            {/* Scanlines */}
             <div className="absolute inset-0 pointer-events-none z-40 opacity-[0.03]">
               <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] animate-scanlines" />
             </div>
           </>
         )}
 
-        {/* Decorative Background Blob & White Rabbit (Only in Visual Mode - Glass Lab) */}
         {!isTerminalMode && (
           <>
-            {/* Background elements (z-0 so they stay behind content) */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-              {/* Subtle Blueprint Grid */}
               <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-40 z-0" />
-              {/* Glassy Orbs */}
               <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-teal-100/40 blur-[120px] animate-pulse z-0" />
               <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px] z-0" />
               <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px] z-0" />
             </div>
 
-            {/* White Rabbit Easter Egg - (z-50 so it sits ABOVE the content shield) */}
             <div className="absolute bottom-0 right-0 z-50 p-4 md:p-12 flex items-end justify-end pointer-events-none">
               <img 
                 src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
@@ -933,11 +896,9 @@ const App = () => {
           </>
         )}
 
-          
         <div className="flex-1 p-4 md:p-8 relative overflow-hidden z-10" onClick={() => isTerminalMode && inputRef.current?.focus()}>
           <div ref={scrollRef} onScroll={handleScroll} className={`h-full w-full overflow-y-auto custom-scrollbar transition-all duration-500 ${!isTerminalMode ? 'px-2 pb-20' : ''}`}>
 
-            {/* Mobile Back Button (Only shows in Visual view) */}
             {!isTerminalMode && (currentDir !== '/' || viewedFile) && (
               <button onClick={(e) => {
                 e.stopPropagation();
@@ -954,7 +915,6 @@ const App = () => {
             )}
 
             {isTerminalMode ? (
-              // TERMINAL VIEW
               <div className="flex flex-col gap-2 pb-20">
                 {history.map((line, idx) => (
                   <div key={idx} className="animate-in fade-in slide-in-from-left-2 duration-300">
@@ -991,14 +951,12 @@ const App = () => {
                 {isProcessing && <div className="animate-pulse text-green-600 font-bold mt-4">SYNCHRONIZING DATA...</div>}
               </div>
             ) : (
-              // VISUAL (NON-PROGRAMMER) VIEW - GLASS LAB THEME
               <div className="max-w-4xl mx-auto animate-in fade-in duration-500 pb-10 ">
                 {visualNode ? (
                   <section className="space-y-8">
                     <div className="flex items-center justify-between border-b border-slate-200 pb-6 mb-8">
                       <h2 className="text-3xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-cyan-500 flex items-center gap-3 tracking-tight break-words">
                         {visualNode.isProject ? <Folder className="text-teal-500 shrink-0" size={36} /> : <Sparkles className="text-teal-500 shrink-0" size={36} />}
-                        {/* APPLIED PROPER CASE FORMATTER HERE */}
                         {formatDisplayName(visualNode.visualLabel || visualNode.label || visualNode.path?.split('/').pop(), false)}
                       </h2>
                       <span className="text-[10px] hidden absolute top-20 right-4 sm:block font-medium text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">{visualNode.path}</span>
@@ -1010,13 +968,10 @@ const App = () => {
                         <p className="font-bold text-teal-600 animate-pulse tracking-widest uppercase text-sm">Loading Content...</p>
                       </div>
                     ) : (
-                      // FILE CONTENT DISPLAY
                       <div className="w-full">
                         <div className="bg-white/70 backdrop-blur-2xl p-6 md:p-10 rounded-3xl border border-white text-slate-700 whitespace-pre-wrap text-[12px] sm:text-sm md:text-base lg:text-lg leading-relaxed break-words shadow-xl shadow-slate-200/50 relative overflow-hidden">
-                          {/* Subtle background decoration inside the card */}
                           <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -z-10 opacity-50" />
 
-                          {/* NEW: Explicitly render the ASCII art cleanly in a Monospace Block for the Visual View */}
                           {visualNode.ascii && (
                             <div className="font-mono text-[10px] sm:text-xs md:text-sm text-teal-600/80 mb-6 whitespace-pre overflow-x-auto leading-[1.2] opacity-90">
                               {visualNode.ascii}
@@ -1025,7 +980,6 @@ const App = () => {
 
                           {visualNode.content}
 
-                          {/* DOWNLOAD RESUME INJECTOR */}
                           {visualNode.path === '/available_for.txt' && (
                             <div className="mt-10 pt-8 border-t border-slate-100">
                               <a
@@ -1075,11 +1029,9 @@ const App = () => {
                     )}
                   </section>
                 ) : (
-                  // DIRECTORY DISPLAY
                   <div className="flex flex-col animate-in fade-in duration-500">
                     <div className="border-b border-slate-200 pb-4 mb-6 md:pb-8 md:mb-12">
                       <h2 className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500 tracking-tighter break-words">
-                        {/* APPLIED PROPER CASE FORMATTER HERE */}
                         {formatDisplayName(activeDirectory?.visualLabel || activeDirectory?.label || 'System Directory', false)}
                       </h2>
                       <p className="text-slate-400 font-medium text-sm mt-3 tracking-widest uppercase break-all">Path: {currentDir}</p>
@@ -1090,7 +1042,6 @@ const App = () => {
                         {currentDir === '/' ? <Monitor size={56} strokeWidth={1.5} /> : currentDir.includes('about') ? <User size={56} strokeWidth={1.5} /> : <Folder size={56} strokeWidth={1.5} />}
                       </div>
 
-                      {/* --- UPDATED CONDITIONAL RENDER FOR ROOT VS INNER DIRECTORY --- */}
                       {currentDir === '/' ? (
                         <div className="space-y-4 px-6 max-w-2xl text-center">
                           <h3 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Welcome to devOS</h3>
@@ -1105,7 +1056,6 @@ const App = () => {
                           <p className="text-slate-500 md:text-lg leading-relaxed">Choose an item below to view its contents and explore the directory.</p>
                         </div>
                       )}
-                      {/* ----------------------------------------------------------- */}
 
                       <div className="flex flex-wrap items-center justify-center gap-4 px-6 max-w-2xl">
                         {activeDirectory?.children.map(child => {
@@ -1123,7 +1073,6 @@ const App = () => {
                                   : 'bg-white/5 border-white/40 text-slate-600 hover:bg-white/20 hover:border-white/80 hover:text-slate-900'}
                               `}
                             >
-                              {/* APPLIED PROPER CASE FORMATTER HERE */}
                               {formatDisplayName(child, false)}
                             </button>
                           );
@@ -1136,7 +1085,6 @@ const App = () => {
             )}
           </div>
 
-          {/* SCROLL TO TOP BUTTON (Only in Visual Mode) */}
           {!isTerminalMode && showScrollTop && (
             <button onClick={scrollToTop} className="absolute bottom-8 right-8 p-4 bg-white text-teal-600 rounded-full shadow-2xl z-50 hover:bg-teal-50 border border-slate-100 transition-all hover:-translate-y-2 animate-in zoom-in" aria-label="Scroll to top">
               <ChevronUp size={24} strokeWidth={3} />
@@ -1145,7 +1093,7 @@ const App = () => {
         </div>
       </main>
 
-      {/* FULLSCREEN IMAGE MODAL */}
+      {/* --- MODALS --- */}
       {selectedImageState && currentImage && (
         <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center backdrop-blur-md animate-in fade-in duration-300" onClick={() => setSelectedImageState(null)} onTouchStart={(e) => touchStartX.current = e.targetTouches[0].clientX} onTouchMove={(e) => {
           touchEndX.current = e.targetTouches[0].clientX;
@@ -1178,56 +1126,45 @@ const App = () => {
           </div>
         </div>
       )}
-{/* ---------------- EASTER EGG OVERLAYS ---------------- */}
-      
-      {/* MATRIX RAIN OVERLAY */}
+
       {showMatrixRain && <MatrixRain onClose={() => setShowMatrixRain(false)} />}
 
-      {/* PILL CHOICE OVERLAY */}
-{showPillChoice && (
-  // Removed backdrop-blur-md and shortened fade-in to duration-150
-  <div className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center animate-in fade-in duration-150 font-mono">
-    <h2 className="text-white text-3xl md:text-5xl mb-16 font-bold tracking-[0.2em] text-center">
-      Make your choice.
-    </h2>
-    <div className="flex gap-12 md:gap-32 items-center justify-center">
-      
-      {/* Red Pill */}
-      <button
-        onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
-        // Isolated transition to transform only, removed the heavy glowing drop-shadow
-        className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
-      >
-        <img 
-          src="https://mr3anderson.pro/assets/images/The%20Construct/leftred.svg" 
-          alt="Red Pill" 
-          className="w-220 md:w-200 h-auto" 
-        />
-      </button>
+      {showPillChoice && (
+        <div className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center animate-in fade-in duration-150 font-mono">
+          <h2 className="text-white text-3xl md:text-5xl mb-16 font-bold tracking-[0.2em] text-center">
+            Make your choice.
+          </h2>
+          <div className="flex gap-12 md:gap-32 items-center justify-center">
+            <button
+              onClick={() => { setShowPillChoice(false); setShowWakeUp(true); }}
+              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+            >
+              <img 
+                src="https://mr3anderson.pro/assets/images/The%20Construct/leftred.svg" 
+                alt="Red Pill" 
+                className="w-220 md:w-200 h-auto" 
+              />
+            </button>
 
-      {/* Blue Pill */}
-      <button
-        onClick={() => setShowPillChoice(false)}
-        className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
-      >
-        <img 
-          src="https://mr3anderson.pro/assets/images/The%20Construct/rightblue.svg" 
-          alt="Blue Pill" 
-          className="w-220 md:w-200 h-auto" 
-        />
-      </button>
+            <button
+              onClick={() => setShowPillChoice(false)}
+              className="group relative hover:scale-105 transition-transform duration-200 focus:outline-none"
+            >
+              <img 
+                src="https://mr3anderson.pro/assets/images/The%20Construct/rightblue.svg" 
+                alt="Blue Pill" 
+                className="w-220 md:w-200 h-auto" 
+              />
+            </button>
+          </div>
+        </div>
+      )}
 
-    </div>
-  </div>
-)}
-
-      {/* WAKE UP BLACK SCREEN OVERLAY */}
       {showWakeUp && (
         <div 
           className="fixed inset-0 z-[300] bg-[#020202] flex flex-col items-center justify-center cursor-pointer select-none animate-in fade-in duration-700"
           onClick={() => setShowWakeUp(false)}
         >
-          {/* Surveillance Eye Moved to Main Stage (Behind text) */}
           <div className="absolute inset-0 flex items-center justify-center opacity-25 mix-blend-screen pointer-events-none">
             <img 
               src="https://mr3anderson.pro/assets/images/The%20Construct/eye.gif" 
@@ -1236,7 +1173,6 @@ const App = () => {
             />
           </div>
 
-          {/* Front text layers */}
           <div className="space-y-4 text-center max-w-xl select-none">
             <h2 className="text-green-500 font-mono text-4xl md:text-7xl tracking-[0.2em] font-black uppercase drop-shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse">
               Wake up...
@@ -1251,7 +1187,6 @@ const App = () => {
           </p>
         </div>
       )}
-      {/* ------------------------------------------------------ */}
 
       <style>{`
         @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 40px; } }
