@@ -772,26 +772,52 @@ const App = () => {
           </button>
         </div>
 
-        {/* Scanlines Effect (Only in Terminal Mode) */}
+        {/* Scanlines Effect & Mr. Anderson (Only in Terminal Mode) */}
         {isTerminalMode && (
-          <div className="absolute inset-0 pointer-events-none z-40 opacity-[0.03]">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] animate-scanlines" />
-          </div>
+          <>
+            {/* Mr. Anderson Easter Egg */}
+            <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-3 mix-blend-screen">
+              <img 
+                src="https://mr3anderson.pro/assets/images/The%20Construct/mranderson.svg" 
+                alt="Mr. Anderson" 
+                className="w-[60%] md:w-[40%] h-auto object-contain 
+                 brightness-125   /* Makes it pop */
+                 contrast-150     /* Sharpens the edges */
+                 drop-shadow-[0_0_10px_rgba(0,255,10,0.5)] /* Matrix Green Glow */
+                 blur-[0.5px]"
+              />
+            </div>
+            
+            {/* Scanlines */}
+            <div className="absolute inset-0 pointer-events-none z-40 opacity-[0.03]">
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] animate-scanlines" />
+            </div>
+          </>
         )}
 
-        {/* Decorative Background Blob (Only in Visual Mode - Glass Lab) */}
+        {/* Decorative Background Blob & White Rabbit (Only in Visual Mode - Glass Lab) */}
         {!isTerminalMode && (
           <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
             {/* Subtle Blueprint Grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
+            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:32px_32px] opacity-40 z-0" />
 
             {/* Glassy Orbs */}
-            <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-teal-100/40 blur-[120px] animate-pulse" />
-            <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px]" />
+            <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] rounded-full bg-teal-100/40 blur-[120px] animate-pulse z-0" />
+            <div className="absolute top-[30%] -left-[10%] w-[50%] h-[50%] rounded-full bg-sky-100/40 blur-[120px] z-0" />
+            <div className="absolute bottom-[-10%] right-[20%] w-[40%] h-[40%] rounded-full bg-indigo-50/50 blur-[120px] z-0" />
+
+            {/* White Rabbit Easter Egg - Moved below orbs for visibility, pinned bottom right, no fade */}
+            <div className="absolute bottom-0 right-0 z-10 p-4 md:p-12 flex items-end justify-end">
+              <img 
+                src="https://mr3anderson.pro/assets/images/The%20Construct/whiterabbit.svg" 
+                alt="White Rabbit" 
+                className="w-48 md:w-80 h-auto object-contain" 
+              />
+            </div>
           </div>
         )}
 
+          
         <div className="flex-1 p-4 md:p-8 relative overflow-hidden z-10" onClick={() => isTerminalMode && inputRef.current?.focus()}>
           <div ref={scrollRef} onScroll={handleScroll} className={`h-full w-full overflow-y-auto custom-scrollbar transition-all duration-500 ${!isTerminalMode ? 'px-2 pb-20' : ''}`}>
 
