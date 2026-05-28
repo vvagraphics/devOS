@@ -292,8 +292,8 @@ const HELP_TEXT = `
 AVAILABLE COMMANDS:
 -------------------
 ls          : List all files and directories in current location.
-cd [dir]    : Change directory. Use 'cd ..' to go back.
-run [file]  : Read file contents.
+cd [dir]    : Change directory example 'cd projects' | 'cd ..' to go back.
+run [proj]  : Read file contents. example 'run reson'.
 clear       : Wipe terminal history.
 gui         : Toggle to visual interface.
 pwd         : Print working directory.
@@ -562,8 +562,8 @@ const App = () => {
       playErrorSound();
       setHistory(prev => [
         ...prev,
-        { type: 'output', content: `[!] INVALID COMMAND: "${responseValue}"` },
-        { type: 'output', content: "Open live website in new tab? [y/n]" }
+        { type: 'output', content: `[SYSTEM] INVALID CHOICE: "${responseValue}"` },
+      { type: 'prompt', content: "PLEASE TYPE 'Y' FOR YES OR 'N' FOR NO." }
       ]);
     }
   };
@@ -601,7 +601,12 @@ const App = () => {
         setHistory(prev => [...prev, { type: 'output', content: currentDir }]);
         break;
       case 'clear':
-        setHistory([{ type: 'output', content: ASCII_HEADER }, { type: 'output', content: 'SESSION REFRESHED.' }]);
+        setHistory([
+        { type: 'output', content: ASCII_HEADER },
+        { type: 'output', content: 'SYSTEM REBOOTING... DONE.' },
+        { type: 'output', content: 'Type "help" for a list of available commands.' }
+      ]);
+        // ([{ type: 'output', content: ASCII_HEADER }, { type: 'output', content: 'SESSION REFRESHED.' }]);
         break;
       case 'gui':
         setIsTerminalMode(false);
